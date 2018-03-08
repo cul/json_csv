@@ -1,0 +1,23 @@
+{
+  "author" : "Lincoln, Abraham",
+  "illustrators[0]" : "Lincoln, Mary Todd",
+  "illustrators[1]" : "Lincoln, Robert Todd",
+  "is_a_great_book" : true,
+  "notes_from_reviewers[0]" : "I cannot say enough good things about this book. Should be required reading for all.",
+  "notes_from_reviewers[1]" : "Hats off to Abraham Lincoln for what is sure to be another bestseller!",
+  "number_of_pages" : 212,
+  "published" : "1865-04-14",
+  "related_books[0].author" : "Churchill, Winston",
+  "related_books[0].is_a_great_book" : true,
+  "related_books[0].notes_from_reviewers[0]" : "Gets right to the point.",
+  "related_books[0].notes_from_reviewers[1]" : "Very enjoyable. Full of the wit and insight we've come to expect from Sir Churchill.",
+  "related_books[0].number_of_pages" : 5,
+  "related_books[0].title" : "I Love My Homburg Hat",
+  "related_books[1].author" : "Bonaparte, Napoléon",
+  "related_books[1].is_a_great_book" : false,
+  "related_books[1].notes_from_reviewers[0]" : "It was in French and I don't speak French. Not sure why I bought this book.",
+  "related_books[1].notes_from_reviewers[1]" : "I thought this was going to be a book about hats, but after chapter two it just turned into a 900 page rant about the metric system.",
+  "related_books[1].number_of_pages" : 1001,
+  "related_books[1].title" : "Bicorne Hats Are All The Rage These Days",
+  "title" : "In Defense of Stovepipe Hats"
+}

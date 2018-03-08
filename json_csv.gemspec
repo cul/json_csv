@@ -14,6 +14,9 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency("rake", ">= 10.1")
   s.add_development_dependency("rspec", "~>3.7")
+  s.add_development_dependency("rubocop", "~> 0.51.0")
+  s.add_development_dependency("rubocop-rspec", "~> 1.20.1")
+  s.add_development_dependency("simplecov", "~> 0.15.1")
 
   s.files        = Dir["lib/**/*.rb", "lib/tasks/**/*.rake", "bin/*", "LICENSE", "*.md"]
   s.require_paths = ['lib']

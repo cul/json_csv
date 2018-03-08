@@ -1,0 +1,37 @@
+{
+  "title" : "In Defense of Stovepipe Hats",
+  "author" : "Lincoln, Abraham",
+  "number_of_pages" : 212,
+  "is_a_great_book" : true,
+  "notes_from_reviewers" : [
+    "I cannot say enough good things about this book. Should be required reading for all.",
+    "Hats off to Abraham Lincoln for what is sure to be another bestseller!"
+  ],
+  "illustrators" : [
+    "Lincoln, Mary Todd",
+    "Lincoln, Robert Todd"
+  ],
+  "published" : "1865-04-14",
+  "related_books" : [
+    {
+      "title" : "I Love My Homburg Hat",
+      "author" : "Churchill, Winston",
+      "number_of_pages" : 5,
+      "is_a_great_book" : true,
+      "notes_from_reviewers" : [
+        "Gets right to the point.",
+        "Very enjoyable. Full of the wit and insight we've come to expect from Sir Churchill."
+      ]
+    },
+    {
+      "title" : "Bicorne Hats Are All The Rage These Days",
+      "author" : "Bonaparte, Napoléon",
+      "number_of_pages" : 1001,
+      "is_a_great_book" : false,
+      "notes_from_reviewers" : [
+        "It was in French and I don't speak French. Not sure why I bought this book.",
+        "I thought this was going to be a book about hats, but after chapter two it just turned into a 900 page rant about the metric system."
+      ]
+    }
+  ]
+}

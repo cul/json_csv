@@ -1,0 +1,16 @@
+{
+  "author" : "Salinger, J. D.",
+  "illustrators[0]" : "Springsteen, Bruce",
+  "illustrators[1]" : "Agnew, Spiro",
+  "is_a_great_book" : true,
+  "notes_from_reviewers[0]" : "What does it mean to be a catcher in the rye? That is a question that this book definitely answers.",
+  "notes_from_reviewers[1]" : "I liked when Holden Caufield caught that thing while in the rye. Well done, Holden.",
+  "number_of_pages" : 214,
+  "published" : "1951-07-16",
+  "related_books[0].author" : "Sourdough, J. D.",
+  "related_books[0].is_a_great_book" : false,
+  "related_books[0].notes_from_reviewers[0]" : "Too many carbs.",
+  "related_books[0].number_of_pages" : 256,
+  "related_books[0].title" : "Catcher in the Whole Wheat",
+  "title" : "The Catcher in the Rye"
+}
