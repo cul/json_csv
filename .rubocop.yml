@@ -7,6 +7,7 @@ AllCops:
     - '*.gemspec'
     - 'bin/**/*'
     - 'spec/**/*'
+    - 'vendor/**/*'
 
 Layout/BlockEndNewline:
   Exclude:
@@ -16,6 +17,9 @@ Layout/EmptyLinesAroundModuleBody:
   Enabled: false
 
 Layout/EmptyLinesAroundBlockBody:
+  Enabled: false
+
+Layout/EmptyLinesAroundClassBody:
   Enabled: false
 
 Layout/MultilineBlockLayout:
@@ -29,10 +33,10 @@ Metrics/AbcSize:
   Enabled: false
 
 Metrics/CyclomaticComplexity:
-  Max: 10
+  Max: 12
 
 Metrics/PerceivedComplexity:
-  Max: 10
+  Max: 12
 
 Metrics/MethodLength:
   Enabled: false
@@ -46,6 +50,9 @@ Metrics/ModuleLength:
   Exclude: []
   CountComments: false
   Max: 110
+
+Metrics/ParameterLists:
+  Max: 6
 
 Naming/PredicateName:
   Exclude: []
