@@ -7,11 +7,16 @@ module JsonCsv
     # strings (because CSVs are dumb and don't store info about data types)
     # Set first_index to 1 if you want the first element in an array to
     #
-    def json_hash_to_flat_csv_row_hash(json_hash)
+    def json_hash_to_flat_csv_row_hash(json_hash, array_notation = JsonCsv::ArrayNotation::BRACKETS)
       flat = flatten_hash(json_hash)
       # Convert values to strings because in the CSV file, all values are strings
       flat.each { |key, val| flat[key] = val.nil? ? '' : val.to_s }
-      flat
+      # If we're using dash array notation, convert the headers
+      if array_notation == JsonCsv::ArrayNotation::DASH
+        Hash[flat.map { |key, val| [JsonCsv::ArrayNotation.bracket_header_to_dash_header(key), val] }]
+      else
+        flat
+      end
     end
 
     # This method calls itself recursively while flattening a hash, and during
@@ -20,7 +25,7 @@ module JsonCsv
       if obj.is_a?(Hash)
         obj.each do |key, val|
           if key_contains_unallowed_characters?(key)
-            raise ArgumentError, 'Cannot deal with hash keys that contain "[" or "]" because these are used for internal processing.'
+            raise ArgumentError, 'Cannot deal with hash keys that contain "[" or "]" or "." because these characters have special meanings in CSV headers.'
           end
           path = parent_path + (parent_path.empty? ? '' : '.') + key
           flatten_hash(val, path, flat_hash_to_build)

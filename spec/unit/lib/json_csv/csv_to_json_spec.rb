@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'json_csv/csv_to_json'
+require 'json_csv/array_notation'
 require 'tempfile'
 
 describe JsonCsv::CsvToJson do
@@ -7,6 +8,7 @@ describe JsonCsv::CsvToJson do
   let(:dummy_class) { Class.new { extend JsonCsv::CsvToJson } }
 
   let(:example_csv_file_for_2_records) { fixture('round_trip/example-2-records.csv') }
+  let(:example_csv_file_for_2_records_with_dash_array_notation) { fixture('round_trip/example-2-records-with-dash-notation.csv') }
   let(:example_hierarchical_json_hash_for_record_1) { JSON.parse(fixture('round_trip/example-record-1.json').read) }
   let(:example_hierarchical_json_hash_for_record_2) { JSON.parse(fixture('round_trip/example-record-2.json').read) }
 
@@ -28,6 +30,83 @@ describe JsonCsv::CsvToJson do
     it "converts as expected" do
       dummy_class.csv_file_to_hierarchical_json_hash(example_csv_file_for_2_records.path, field_casting_rules) do |json_hash_for_row, i|
         expect(json_hash_for_row).to eq(expected_results[i])
+      end
+    end
+
+    it "converts as expected with DASH array notation headers" do
+      dummy_class.csv_file_to_hierarchical_json_hash(example_csv_file_for_2_records_with_dash_array_notation.path, field_casting_rules, JsonCsv::ArrayNotation::DASH) do |json_hash_for_row, i|
+        expect(json_hash_for_row).to eq(expected_results[i])
+      end
+    end
+  end
+
+  context '.csv_row_hash_to_hierarchical_json_hash' do
+    let(:csv_row_hash) do
+      {
+        'key[0]' => 'val0',
+        'key[1]' => 'val1',
+        'otherkey[2]' => 'otherval2',
+        'otherkey[3]' => 'otherval3',
+        'aaa[2].bbb[0].ccc' => 'true',
+        'aaa[2].bbb[0].ddd' => '   eee   ',
+        'empty[0].path[0].of[0].nothingness[0]' => ' '
+      }
+    end
+    let(:field_casting_rules) do
+      {
+        'aaa[x].bbb[x].ccc' => 'boolean'
+      }
+    end
+    context "works as expected, trimming string values and removing empty values by default" do
+      let(:expected_cleaned) do
+        {
+          'key' => [
+            'val0', 'val1'
+          ],
+          'otherkey' => [
+            'otherval2', 'otherval3'
+          ],
+          'aaa' => [
+            {
+              'bbb' => [
+                {
+                  'ccc' => true,
+                  'ddd' => 'eee'
+                }
+              ]
+            }
+          ]
+        }
+      end
+      it do
+        expect(dummy_class.csv_row_hash_to_hierarchical_json_hash(csv_row_hash, field_casting_rules)).to eq(expected_cleaned)
+      end
+    end
+
+    context "does not strip string values when strip_value_whitespace arg is false" do
+      let(:strip_value_whitespace) { false }
+      let(:expected_without_whitespace_strip) do
+        {
+          'key' => [
+            'val0', 'val1'
+          ],
+          'otherkey' => [
+            'otherval2', 'otherval3'
+          ],
+          'aaa' => [
+            {
+              'bbb' => [
+                {
+                  'ccc' => true,
+                  'ddd' => '   eee   '
+                }
+              ]
+            }
+          ]
+        }
+      end
+      it do
+        expect(dummy_class.csv_row_hash_to_hierarchical_json_hash(csv_row_hash, field_casting_rules, strip_value_whitespace)).to eq(expected_without_whitespace_strip)
       end
     end
   end

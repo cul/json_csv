@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'json_csv/json_to_csv'
+require 'json_csv/array_notation'
 
 describe JsonCsv::JsonToCsv do
 
@@ -11,17 +12,32 @@ describe JsonCsv::JsonToCsv do
   let(:example_flat_json_hash_for_record_2) { JSON.parse(fixture('round_trip/example-record-2-flat.json').read) }
 
   context '.json_hash_to_flat_csv_row_hash' do
-    let(:example_csv_2d_array_for_2_records) { CSV.parse(fixture('round_trip/example-2-records.csv').read) }
     let(:csv_header_row) { example_csv_2d_array_for_2_records[0] }
     let(:csv_data_record_1) { example_csv_2d_array_for_2_records[1] }
     let(:csv_data_record_2) { example_csv_2d_array_for_2_records[2] }
 
-    it "returns expected values for csv row 1" do
-      expect(dummy_class.json_hash_to_flat_csv_row_hash(example_hierarchical_json_hash_for_record_1)).to eq(csv_header_row.zip(csv_data_record_1).to_h.reject{|key, val| val.nil? || val == ''})
+    context "with default BRACKETS array notation" do
+      let(:example_csv_2d_array_for_2_records) { CSV.parse(fixture('round_trip/example-2-records.csv').read) }
+
+      it "returns expected values for csv row 1" do
+        expect(dummy_class.json_hash_to_flat_csv_row_hash(example_hierarchical_json_hash_for_record_1)).to eq(csv_header_row.zip(csv_data_record_1).to_h.reject{|key, val| val.nil? || val == ''})
+      end
+
+      it "returns expected values for csv row 2" do
+        expect(dummy_class.json_hash_to_flat_csv_row_hash(example_hierarchical_json_hash_for_record_2)).to eq(csv_header_row.zip(csv_data_record_2).to_h.reject{|key, val| val.nil? || val == ''})
+      end
     end
 
-    it "returns expected values for csv row 2" do
-      expect(dummy_class.json_hash_to_flat_csv_row_hash(example_hierarchical_json_hash_for_record_2)).to eq(csv_header_row.zip(csv_data_record_2).to_h.reject{|key, val| val.nil? || val == ''})
+    context "with DASH array notation" do
+      let(:example_csv_2d_array_for_2_records) { CSV.parse(fixture('round_trip/example-2-records-with-dash-notation.csv').read) }
+
+      it "returns expected values for csv row 1 with DASH array notation" do
+        expect(dummy_class.json_hash_to_flat_csv_row_hash(example_hierarchical_json_hash_for_record_1, JsonCsv::ArrayNotation::DASH)).to eq(csv_header_row.zip(csv_data_record_1).to_h.reject{|key, val| val.nil? || val == ''})
+      end
+
+      it "returns expected values for csv row 2 with DASH array notation" do
+        expect(dummy_class.json_hash_to_flat_csv_row_hash(example_hierarchical_json_hash_for_record_2, JsonCsv::ArrayNotation::DASH)).to eq(csv_header_row.zip(csv_data_record_2).to_h.reject{|key, val| val.nil? || val == ''})
+      end
     end
   end
 

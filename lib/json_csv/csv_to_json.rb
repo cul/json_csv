@@ -1,4 +1,5 @@
 require 'json_csv/array_notation'
+require 'json_csv/utils'
 require 'csv'
 
 module JsonCsv
@@ -14,23 +15,31 @@ module JsonCsv
     # presenting that row as un-flattened json.
     # This method works for large CSVs and uses very little memory
     # because it only keeps one row in memory at a time.
-    def csv_file_to_hierarchical_json_hash(path_to_csv, field_casting_rules = {}, array_notation = JsonCsv::ArrayNotation::BRACKETS)
+    def csv_file_to_hierarchical_json_hash(path_to_csv, field_casting_rules = {}, array_notation = JsonCsv::ArrayNotation::BRACKETS, strip_value_whitespace = true)
       i = 0
       CSV.foreach(path_to_csv, headers: true, header_converters: lambda { |header|
-        if array_notation == JsonCsv::ArrayNotation::BRACKETS
-          header
-        elsif array_notation == JsonCsv::ArrayNotation::BRACKETS
-          JsonCsv::ArrayNotation.dash_header_to_bracket_header(header)
+        if array_notation == JsonCsv::ArrayNotation::DASH
+          JsonCsv::ArrayNotation.dash_header_to_bracket_header(header).strip
+        else
+          header.strip
         end
       }) do |row_data_hash|
-        hierarchical_hash = {}
-        row_data_hash.each do |key, value|
-          next if value.nil? || value == '' # ignore nil or empty string values
-          put_value_at_json_path(hierarchical_hash, key, value, field_casting_rules)
-        end
-        yield hierarchical_hash, i
+        yield csv_row_hash_to_hierarchical_json_hash(row_data_hash, field_casting_rules, strip_value_whitespace), i
         i += 1
       end
+    end
+
+    def csv_row_hash_to_hierarchical_json_hash(row_data_hash, field_casting_rules, strip_value_whitespace = true)
+      hierarchical_hash = {}
+      row_data_hash.each do |key, value|
+        next if value.nil? || value == '' # ignore nil or empty string values
+        put_value_at_json_path(hierarchical_hash, key, value, field_casting_rules)
+      end
+      # Clean up empty array elements, which may have come about from CSV data
+      # that was 1-indexed instead of 0-indexed.
+      JsonCsv::Utils.recursively_remove_blank_fields!(hierarchical_hash)
+      JsonCsv::Utils.recursively_strip_value_whitespace!(hierarchical_hash) if strip_value_whitespace
+      hierarchical_hash
     end
 
     # For the given obj, puts the given value at the given json_path,
