@@ -8,7 +8,7 @@ describe JsonCsv::CsvBuilder do
 
   context '.original_header_indexes_to_sorted_indexes' do
     let(:column_header_comparator) {
-      JsonCsv::JsonToCsv::ClassMethods::BRACKET_HEADER_SORT_COMPARATOR
+      JsonCsv::JsonToCsv::ClassMethods::DEFAULT_HEADER_SORT_COMPARATOR
     }
     let(:original_headers) {
       ['zzz', 'bbb[1].ccc[2]', 'bbb[1].ccc[1]', 'aaa', 'bbb[1].ccc[10]']
@@ -52,7 +52,7 @@ describe JsonCsv::CsvBuilder do
 
     context '.create_csv_without_headers' do
       it "works as expected" do
-        headers = JsonCsv::CsvBuilder.create_csv_without_headers(out_csv_tempfile.path, JsonCsv::ArrayNotation::BRACKETS, 'wb') do |csv_builder|
+        headers = JsonCsv::CsvBuilder.create_csv_without_headers(out_csv_tempfile.path, 'wb') do |csv_builder|
           csv_builder.add(json_doc)
         end
 
@@ -65,7 +65,7 @@ describe JsonCsv::CsvBuilder do
       it "works as expected" do
         csv_builder = nil
         CSV.open(out_csv_tempfile.path, 'wb') do |csv|
-          csv_builder = JsonCsv::CsvBuilder.send(:new, csv, JsonCsv::ArrayNotation::BRACKETS)
+          csv_builder = JsonCsv::CsvBuilder.send(:new, csv)
           csv_builder.add(json_doc)
         end
         expect(CSV.read(out_csv_tempfile.path)).to eq(expected_csv_content)

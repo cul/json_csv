@@ -1,14 +1,12 @@
 require 'spec_helper'
 require 'json_csv/csv_to_json'
-require 'json_csv/array_notation'
 require 'tempfile'
 
 describe JsonCsv::CsvToJson do
 
   let(:dummy_class) { Class.new { include JsonCsv::CsvToJson } }
 
-  let(:unsorted_headers_2_records_brackets) { fixture('round_trip/unsorted-headers-2-records-brackets.csv') }
-  let(:unsorted_headers_2_records_dashes) { fixture('round_trip/unsorted-headers-2-records-dash.csv') }
+  let(:unsorted_headers_2_records_csv_file) { fixture('round_trip/unsorted-headers-2-records.csv') }
   let(:example_hierarchical_json_hash_for_record_1) { JSON.parse(fixture('round_trip/example-record-1.json').read) }
   let(:example_hierarchical_json_hash_for_record_2) { JSON.parse(fixture('round_trip/example-record-2.json').read) }
 
@@ -28,13 +26,7 @@ describe JsonCsv::CsvToJson do
       ]
     }
     it "converts as expected" do
-      dummy_class.csv_file_to_hierarchical_json_hash(unsorted_headers_2_records_brackets.path, field_casting_rules) do |json_hash_for_row, i|
-        expect(json_hash_for_row).to eq(expected_results[i])
-      end
-    end
-
-    it "converts as expected with DASH array notation headers" do
-      dummy_class.csv_file_to_hierarchical_json_hash(unsorted_headers_2_records_dashes.path, field_casting_rules, JsonCsv::ArrayNotation::DASH) do |json_hash_for_row, i|
+      dummy_class.csv_file_to_hierarchical_json_hash(unsorted_headers_2_records_csv_file.path, field_casting_rules) do |json_hash_for_row, i|
         expect(json_hash_for_row).to eq(expected_results[i])
       end
     end

@@ -1,4 +1,3 @@
-require 'json_csv/array_notation'
 require 'json_csv/utils'
 require 'csv'
 
@@ -20,14 +19,10 @@ module JsonCsv
       # presenting that row as un-flattened json.
       # This method works for large CSVs and uses very little memory
       # because it only keeps one row in memory at a time.
-      def csv_file_to_hierarchical_json_hash(path_to_csv, field_casting_rules = {}, array_notation = JsonCsv::ArrayNotation::BRACKETS, strip_value_whitespace = true)
+      def csv_file_to_hierarchical_json_hash(path_to_csv, field_casting_rules = {}, strip_value_whitespace = true)
         i = 0
         CSV.foreach(path_to_csv, headers: true, header_converters: lambda { |header|
-          if array_notation == JsonCsv::ArrayNotation::DASH
-            JsonCsv::ArrayNotation.dash_header_to_bracket_header(header).strip
-          else
-            header.strip
-          end
+          header.strip # remove leading and trailing header whitespace
         }) do |row_data_hash|
           yield csv_row_hash_to_hierarchical_json_hash(row_data_hash, field_casting_rules, strip_value_whitespace), i
           i += 1

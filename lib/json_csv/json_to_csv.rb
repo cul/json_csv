@@ -9,38 +9,29 @@ module JsonCsv
     end
 
     module ClassMethods
-      BRACKET_HEADER_SORT_COMPARATOR = lambda do |header1, header2|
+      DEFAULT_HEADER_SORT_COMPARATOR = lambda do |header1, header2|
         # Ensure correct alphabetical sorting AND numeric sorting via zero-padding of numbers
         header1_with_zero_padding = header1.gsub(/(?<=\[)\d+(?=\])/) { |capture| capture.to_i.to_s.rjust(5, '0') }
         header2_with_zero_padding = header2.gsub(/(?<=\[)\d+(?=\])/) { |capture| capture.to_i.to_s.rjust(5, '0') }
         header1_with_zero_padding <=> header2_with_zero_padding
       end
 
-      DASH_HEADER_SORT_COMPARATOR = lambda do |header1, header2|
-        # Ensure correct alphabetical sorting AND numeric sorting via zero-padding of numbers
-        header1_with_zero_padding = (header1 + '.').gsub(/(?<=-)\d+(?=\.)/) { |capture| capture.to_i.to_s.rjust(5, '0') }[0...-1]
-        header2_with_zero_padding = (header2 + '.').gsub(/(?<=-)\d+(?=\.)/) { |capture| capture.to_i.to_s.rjust(5, '0') }[0...-1]
-        header1_with_zero_padding <=> header2_with_zero_padding
-      end
-
       # Example usage:
-      # create_csv_for_json_records('/path/to/file.csv', JsonCsv::ArrayNotation::BRACKETS) do |csv_builder|
+      # create_csv_for_json_records('/path/to/file.csv') do |csv_builder|
       #   json_docs.each do |json_doc|
       #     csv_builder.add(json_hash)
       #   end
       # end
-      def create_csv_for_json_records(csv_outfile_path, array_notation)
+      def create_csv_for_json_records(csv_outfile_path)
         csv_temp_outfile_path = csv_outfile_path + '.temp'
 
         # Step 1: Build CSV with unsorted headers in temp file
-        csv_headers = JsonCsv::CsvBuilder.create_csv_without_headers(csv_temp_outfile_path, array_notation, 'wb') do |csv_builder|
+        csv_headers = JsonCsv::CsvBuilder.create_csv_without_headers(csv_temp_outfile_path, 'wb') do |csv_builder|
           yield csv_builder
         end
 
-        header_sort_comparator = array_notation == JsonCsv::ArrayNotation::DASH ? DASH_HEADER_SORT_COMPARATOR : BRACKET_HEADER_SORT_COMPARATOR
-
         # Step 2: Sort CSV columns by header, based on column_header_comparator
-        original_to_sorted_index_map = JsonCsv::CsvBuilder.original_header_indexes_to_sorted_indexes(csv_headers, header_sort_comparator)
+        original_to_sorted_index_map = JsonCsv::CsvBuilder.original_header_indexes_to_sorted_indexes(csv_headers, DEFAULT_HEADER_SORT_COMPARATOR)
         CSV.open(csv_outfile_path, 'wb') do |final_csv|
           # Open temporary CSV for reading
           CSV.open(csv_temp_outfile_path, 'rb') do |temp_csv|
@@ -69,16 +60,11 @@ module JsonCsv
       # strings (because CSVs are dumb and don't store info about data types)
       # Set first_index to 1 if you want the first element in an array to
       #
-      def json_hash_to_flat_csv_row_hash(json_hash, array_notation)
+      def json_hash_to_flat_csv_row_hash(json_hash)
         flat = flatten_hash(json_hash)
         # Convert values to strings because in the CSV file, all values are strings
         flat.each { |key, val| flat[key] = val.nil? ? '' : val.to_s }
-        # If we're using dash array notation, convert the headers
-        if array_notation == JsonCsv::ArrayNotation::DASH
-          Hash[flat.map { |key, val| [JsonCsv::ArrayNotation.bracket_header_to_dash_header(key), val] }]
-        else
-          flat
-        end
+        flat
       end
 
       # This method calls itself recursively while flattening a hash, and during
