@@ -26,8 +26,8 @@ describe JsonCsv::CsvToJson do
       ]
     }
     it "converts as expected" do
-      dummy_class.csv_file_to_hierarchical_json_hash(unsorted_headers_2_records_csv_file.path, field_casting_rules) do |json_hash_for_row, i|
-        expect(json_hash_for_row).to eq(expected_results[i])
+      dummy_class.csv_file_to_hierarchical_json_hash(unsorted_headers_2_records_csv_file.path, field_casting_rules) do |json_hash_for_row, csv_row_number|
+        expect(json_hash_for_row).to eq(expected_results[csv_row_number-1])
       end
     end
   end

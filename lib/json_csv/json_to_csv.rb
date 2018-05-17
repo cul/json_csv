@@ -16,43 +16,52 @@ module JsonCsv
         header1_with_zero_padding <=> header2_with_zero_padding
       end
 
+      def default_header_comparison(header1, header2)
+        DEFAULT_HEADER_SORT_COMPARATOR.call(header1, header2)
+      end
+
       # Example usage:
       # create_csv_for_json_records('/path/to/file.csv') do |csv_builder|
       #   json_docs.each do |json_doc|
       #     csv_builder.add(json_hash)
       #   end
       # end
-      def create_csv_for_json_records(csv_outfile_path)
+      def create_csv_for_json_records(csv_outfile_path, header_sort_comparator = DEFAULT_HEADER_SORT_COMPARATOR)
         csv_temp_outfile_path = csv_outfile_path + '.temp'
 
-        # Step 1: Build CSV with unsorted headers in temp file
-        csv_headers = JsonCsv::CsvBuilder.create_csv_without_headers(csv_temp_outfile_path, 'wb') do |csv_builder|
-          yield csv_builder
-        end
+        begin
+          # Step 1: Build CSV with unsorted headers in temp file
+          csv_headers = JsonCsv::CsvBuilder.create_csv_without_headers(csv_temp_outfile_path, 'wb') do |csv_builder|
+            yield csv_builder
+          end
 
-        # Step 2: Sort CSV columns by header, based on column_header_comparator
-        original_to_sorted_index_map = JsonCsv::CsvBuilder.original_header_indexes_to_sorted_indexes(csv_headers, DEFAULT_HEADER_SORT_COMPARATOR)
-        CSV.open(csv_outfile_path, 'wb') do |final_csv|
-          # Open temporary CSV for reading
-          CSV.open(csv_temp_outfile_path, 'rb') do |temp_csv|
+          # Step 2: Sort CSV columns by header, based on column_header_comparator
+          original_to_sorted_index_map = JsonCsv::CsvBuilder.original_header_indexes_to_sorted_indexes(csv_headers, header_sort_comparator)
+          CSV.open(csv_outfile_path, 'wb') do |final_csv|
+            # Open temporary CSV for reading
+            CSV.open(csv_temp_outfile_path, 'rb') do |temp_csv|
 
-            # write out ordered header row
-            reordered_header_row = []
-            csv_headers.each_with_index do |header, index|
-              reordered_header_row[original_to_sorted_index_map[index]] = header
-            end
-
-            final_csv << reordered_header_row
-
-            temp_csv.each do |temp_csv_row|
-              reordered_temp_csv_row = []
-              # write out ordered data row
-              temp_csv_row.each_with_index do |cell_value, index|
-                reordered_temp_csv_row[original_to_sorted_index_map[index]] = cell_value
+              # write out ordered header row
+              reordered_header_row = []
+              csv_headers.each_with_index do |header, index|
+                reordered_header_row[original_to_sorted_index_map[index]] = header
               end
-              final_csv << reordered_temp_csv_row
+
+              final_csv << reordered_header_row
+
+              temp_csv.each do |temp_csv_row|
+                reordered_temp_csv_row = []
+                # write out ordered data row
+                temp_csv_row.each_with_index do |cell_value, index|
+                  reordered_temp_csv_row[original_to_sorted_index_map[index]] = cell_value
+                end
+                final_csv << reordered_temp_csv_row
+              end
             end
           end
+        ensure
+          # Always delete the temporary CSV
+          FileUtils.rm_f(csv_temp_outfile_path)
         end
       end
 

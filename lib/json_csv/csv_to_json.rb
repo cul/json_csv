@@ -19,8 +19,9 @@ module JsonCsv
       # presenting that row as un-flattened json.
       # This method works for large CSVs and uses very little memory
       # because it only keeps one row in memory at a time.
+      # Sample usage: csv_file_to_hierarchical_json_hash(path_to_csv, field_casting_rules = {}, strip_value_whitespace = true) do |row_json_hash, row_number|
       def csv_file_to_hierarchical_json_hash(path_to_csv, field_casting_rules = {}, strip_value_whitespace = true)
-        i = 0
+        i = 1 # start with row 1 because this corresponds to the first row of 0-indexed CSV data
         CSV.foreach(path_to_csv, headers: true, header_converters: lambda { |header|
           header.strip # remove leading and trailing header whitespace
         }) do |row_data_hash|

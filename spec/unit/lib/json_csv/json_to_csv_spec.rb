@@ -17,9 +17,12 @@ describe JsonCsv::JsonToCsv do
     let(:json_docs) {
       [example_hierarchical_json_hash_for_record_1, example_hierarchical_json_hash_for_record_2]
     }
+    let(:column_header_comparator) {
+      JsonCsv::JsonToCsv::ClassMethods::DEFAULT_HEADER_SORT_COMPARATOR
+    }
     it "works as expected" do
       begin
-        dummy_class.create_csv_for_json_records(out_csv_tempfile.path) do |csv_builder|
+        dummy_class.create_csv_for_json_records(out_csv_tempfile.path, column_header_comparator) do |csv_builder|
           json_docs.each do |json_doc|
             csv_builder.add(json_doc)
           end
@@ -28,6 +31,17 @@ describe JsonCsv::JsonToCsv do
       ensure
         out_csv_tempfile.unlink
       end
+    end
+  end
+
+  context '.default_header_comparison' do
+    it 'sorts as expected' do
+      expect(dummy_class.default_header_comparison('header[2].aaa', 'header[1].aaa')).to eq(1)
+      expect(dummy_class.default_header_comparison('header[000002].aaa', 'header[1].aaa')).to eq(1)
+      expect(dummy_class.default_header_comparison('header[1].aaa', 'header[000000001].aaa')).to eq(0)
+      expect(dummy_class.default_header_comparison('header[2].aaa', 'header[10].aaa')).to eq(-1)
+      expect(dummy_class.default_header_comparison('header[002].aaa', 'header[010].aaa')).to eq(-1)
+      expect(dummy_class.default_header_comparison('aaa.header[02]', 'bbb.header[01]')).to eq(-1)
     end
   end
 
