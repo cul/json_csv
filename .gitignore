@@ -3,6 +3,9 @@ log/*.log
 pkg/
 Gemfile.lock
 
+# Ignore gem builds
+*.gem
+
 # simplecov coverage report
 /coverage
 
