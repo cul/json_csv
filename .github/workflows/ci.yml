@@ -1,0 +1,26 @@
+name: CI
+
+on:
+  push:
+    branches: [ '*' ]
+
+jobs:
+  ci-rails-app:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby-version: ['2.3.4', '2.4.2', '2.7.5', '3.0.3']
+    env:
+      NOKOGIRI_USE_SYSTEM_LIBRARIES: true
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Add --no-document option to .gemrc file to speed up bundle install
+        run: "echo 'gem: --no-document' > ~/.gemrc"
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+      - name: Run CI task
+        run: bundle exec rake json_csv:ci
