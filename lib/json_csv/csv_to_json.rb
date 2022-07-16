@@ -22,7 +22,7 @@ module JsonCsv
       # Sample usage: csv_file_to_hierarchical_json_hash(path_to_csv, field_casting_rules = {}, strip_value_whitespace = true) do |row_json_hash, row_number|
       def csv_file_to_hierarchical_json_hash(path_to_csv, field_casting_rules = {}, strip_value_whitespace = true)
         i = 2 # start with row 2 because this corresponds to the SECOND row of 1-indexed CSV data (where headers are row 1)
-        CSV.foreach(path_to_csv, headers: true, header_converters: lambda { |header|
+        CSV.foreach(path_to_csv, converters: %i[numeric date], headers: true, header_converters: lambda { |header|
           header.strip # remove leading and trailing header whitespace
         }) do |row_data_hash|
           yield csv_row_hash_to_hierarchical_json_hash(row_data_hash, field_casting_rules, strip_value_whitespace), i
