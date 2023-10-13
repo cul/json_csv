@@ -22,7 +22,7 @@ module JsonCsv
       # Sample usage: csv_file_to_hierarchical_json_hash(path_to_csv, field_casting_rules = {}, strip_value_whitespace = true) do |row_json_hash, row_number|
       def csv_file_to_hierarchical_json_hash(path_to_csv, field_casting_rules = {}, strip_value_whitespace = true)
         i = 2 # start with row 2 because this corresponds to the SECOND row of 1-indexed CSV data (where headers are row 1)
-        CSV.foreach(path_to_csv, headers: true, header_converters: lambda { |header|
+        CSV.foreach(path_to_csv, converters: %i[numeric date], headers: true, header_converters: lambda { |header|
           header.strip # remove leading and trailing header whitespace
         }) do |row_data_hash|
           yield csv_row_hash_to_hierarchical_json_hash(row_data_hash, field_casting_rules, strip_value_whitespace), i
@@ -54,7 +54,7 @@ module JsonCsv
           # If the full_json_path_from_top matches one of the field_casting_rules,
           # then case this field to the specified cast type
           full_json_path_from_top_as_field_casting_rule_pattern = real_json_path_to_field_casting_rule_pattern(full_json_path_from_top)
-          obj[json_path_pieces[0]] = field_casting_rules.key?(full_json_path_from_top_as_field_casting_rule_pattern) ? apply_field_casting_type(value, field_casting_rules[full_json_path_from_top_as_field_casting_rule_pattern]) : value
+          obj[json_path_pieces[0]] = field_casting_rules.key?(full_json_path_from_top_as_field_casting_rule_pattern) ? apply_field_casting_type(value, field_casting_rules[full_json_path_from_top_as_field_casting_rule_pattern]) : value.to_s
         else
           obj[json_path_pieces[0]] ||= (json_path_pieces[1].is_a?(Integer) ? [] : {})
           put_value_at_json_path(obj[json_path_pieces[0]], pieces_to_json_path(json_path_pieces[1..-1]), value, field_casting_rules, full_json_path_from_top)
@@ -72,10 +72,10 @@ module JsonCsv
 
         case field_casting_type
         when TYPE_INTEGER
-          raise ArgumentError, "\"#{value}\" is not an integer" unless value =~ /^[0-9]+$/
+          raise ArgumentError, "\"#{value}\" is not an integer" unless value.to_s =~ /^[0-9]+$/
           value.to_i
         when TYPE_FLOAT
-          raise ArgumentError, "\"#{value}\" is not a float" unless value =~ /^[0-9]+(\.[0-9]+)*$/ || value =~ /^\.[0-9]+$/
+          raise ArgumentError, "\"#{value}\" is not a float" unless value.to_s =~ /^[0-9]+(\.[0-9]+)*$/ || value.to_s =~ /^\.[0-9]+$/
           value.to_f
         when TYPE_BOOLEAN
           if value.downcase == 'true'

@@ -11,7 +11,7 @@ def absolute_fixture_path(file)
 end
 def fixture(file)
   path = absolute_fixture_path(file)
-  raise "No fixture file at #{path}" unless File.exists? path
+  raise "No fixture file at #{path}" unless File.exist? path
   File.new(path)
 end
 
