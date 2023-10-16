@@ -1,15 +1,15 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe JsonCsv do
-
-  it "should be a module" do
-    expect(JsonCsv).to be_a Module
+  it 'is a module' do
+    expect(described_class).to be_a Module
   end
 
-  describe "::version" do
-    it "should return the version" do
-      expect(JsonCsv::version).to eq(subject::VERSION)
+  describe '::version' do
+    it 'returns the version' do
+      expect(described_class.version).to eq(described_class::VERSION)
     end
   end
-
 end

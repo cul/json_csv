@@ -1,33 +1,52 @@
-require: rubocop-rspec
+inherit_gem:
+  rubocul: rubocul_default.yml
+
+inherit_from: .rubocop_todo.yml
 
 AllCops:
+  TargetRubyVersion: 2.6.10
   DisplayCopNames: true
   Exclude:
-    - 'Gemfile'
-    - '*.gemspec'
     - 'bin/**/*'
-    - 'spec/**/*'
+    - 'db/**/*'
+    - 'app/javascript/**/*'
+    - 'node_modules/**/*'
     - 'vendor/**/*'
+    - 'lib/tasks/triclops/**/*'
+    - 'tmp/**/*'
 
-Layout/BlockEndNewline:
-  Exclude:
-    - 'spec/**/*'
-
-Layout/EmptyLinesAroundModuleBody:
+RSpec/ContextWording:
   Enabled: false
 
-Layout/EmptyLinesAroundBlockBody:
+RSpec/MultipleExpectations:
   Enabled: false
 
-Layout/EmptyLinesAroundClassBody:
+RSpec/ExampleLength:
   Enabled: false
 
-Layout/MultilineBlockLayout:
-  Exclude:
-    - 'spec/**/*'
+# Metrics/BlockLength:
+#   Exclude:
+#     - 'spec/**/*'
 
-Metrics/LineLength:
-  Enabled: false
+# Layout/BlockEndNewline:
+#   Exclude:
+#     - 'spec/**/*'
+
+# Layout/EmptyLinesAroundModuleBody:
+#   Enabled: false
+
+# Layout/EmptyLinesAroundBlockBody:
+#   Enabled: false
+
+# Layout/EmptyLinesAroundClassBody:
+#   Enabled: false
+
+# Layout/MultilineBlockLayout:
+#   Exclude:
+#     - 'spec/**/*'
+
+# Metrics/LineLength:
+#   Enabled: false
 
 Metrics/AbcSize:
   Enabled: false
@@ -41,88 +60,91 @@ Metrics/PerceivedComplexity:
 Metrics/MethodLength:
   Enabled: false
 
-Metrics/ClassLength:
-  Exclude: []
-  CountComments: false  # count full line comments?
-  Max: 275
-
-Metrics/ModuleLength:
-  Exclude: []
-  CountComments: false
-  Max: 110
-
-Metrics/ParameterLists:
-  Max: 6
-
-Naming/PredicateName:
-  Exclude: []
-
-Performance/Casecmp:
+Style/OptionalBooleanParameter:
   Enabled: false
 
-Style/BlockDelimiters:
-  Exclude:
-    - 'spec/**/*'
+# Metrics/ClassLength:
+#   Exclude: []
+#   CountComments: false  # count full line comments?
+#   Max: 275
 
-Style/CollectionMethods:
-  PreferredMethods:
-    collect: 'map'
-    collect!: 'map!'
-    inject: 'reduce'
-    detect: 'find'
-    find_all: 'select'
+# Metrics/ModuleLength:
+#   Exclude: []
+#   CountComments: false
+#   Max: 110
 
-Style/WordArray:
-  Enabled: false
+# Metrics/ParameterLists:
+#   Max: 6
 
-Style/RegexpLiteral:
-  Enabled: false
+# Naming/PredicateName:
+#   Exclude: []
 
-Style/StringLiterals:
-  Enabled: false
+# Performance/Casecmp:
+#   Enabled: false
 
-Style/ClassAndModuleChildren:
-  Enabled: false
+# Style/BlockDelimiters:
+#   Exclude:
+#     - 'spec/**/*'
 
-Style/Documentation:
-  Enabled: false
+# Style/CollectionMethods:
+#   PreferredMethods:
+#     collect: 'map'
+#     collect!: 'map!'
+#     inject: 'reduce'
+#     detect: 'find'
+#     find_all: 'select'
 
-Style/HashSyntax:
-  Exclude: []
+# Style/WordArray:
+#   Enabled: false
 
-Style/LineEndConcatenation:
-  Exclude: []
+# Style/RegexpLiteral:
+#   Enabled: false
 
-Style/GlobalVars:
-  Exclude:
-    - 'spec/**/*'
+# Style/StringLiterals:
+#   Enabled: false
 
-Style/SingleLineBlockParams:
-  Enabled: false
+# Style/ClassAndModuleChildren:
+#   Enabled: false
 
-Style/ClassVars:
-  Exclude: []
+# Style/Documentation:
+#   Enabled: false
 
-Style/SignalException:
-  Enabled: false
+# Style/HashSyntax:
+#   Exclude: []
 
-Style/UnneededPercentQ:
-  Enabled: false
+# Style/LineEndConcatenation:
+#   Exclude: []
 
-RSpec/ExampleWording:
-  CustomTransform:
-    be: is
-    have: has
-    not: does not
-    NOT: does NOT
-  IgnoredWords:
-    - only
+# Style/GlobalVars:
+#   Exclude:
+#     - 'spec/**/*'
 
-RSpec/FilePath:
-  Enabled: false
+# Style/SingleLineBlockParams:
+#   Enabled: false
 
-Style/FrozenStringLiteralComment:
-  Enabled: false
+# Style/ClassVars:
+#   Exclude: []
 
-RSpec/InstanceVariable:
-  Enabled: false
+# Style/SignalException:
+#   Enabled: false
+
+# Style/RedundantPercentQ:
+#   Enabled: false
+
+# RSpec/ExampleWording:
+#   CustomTransform:
+#     be: is
+#     have: has
+#     not: does not
+#     NOT: does NOT
+#   IgnoredWords:
+#     - only
+
+# RSpec/FilePath:
+#   Enabled: false
+
+# Style/FrozenStringLiteralComment:
+#   Enabled: false
+
+# RSpec/InstanceVariable:
+#   Enabled: false

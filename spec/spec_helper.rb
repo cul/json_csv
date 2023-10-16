@@ -1,17 +1,21 @@
+# frozen_string_literal: true
+
 require 'simplecov'
 SimpleCov.start
 
 require 'bundler'
 Bundler.setup
 
-require "rspec"
+require 'rspec'
 
 def absolute_fixture_path(file)
-  return File.realpath(File.join(File.dirname(__FILE__), 'fixtures', file))
+  File.realpath(File.join(File.dirname(__FILE__), 'fixtures', file))
 end
+
 def fixture(file)
   path = absolute_fixture_path(file)
-  raise "No fixture file at #{path}" unless File.exists? path
+  raise "No fixture file at #{path}" unless File.exist? path
+
   File.new(path)
 end
 

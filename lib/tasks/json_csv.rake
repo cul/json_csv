@@ -1,8 +1,8 @@
-namespace :json_csv do
+# frozen_string_literal: true
 
-  desc "Hello!"
-  task :hello do
+namespace :json_csv do
+  desc 'Hello!'
+  task hello: :environment do
     puts 'Hello!'
   end
-
 end
