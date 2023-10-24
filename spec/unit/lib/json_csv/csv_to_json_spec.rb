@@ -47,6 +47,15 @@ describe JsonCsv::CsvToJson do
         expect(json_hash_for_row['is_a_great_book']).to be_an_instance_of(String)
       end
     end
+
+    it 'always converts a CSV date string cell value to a JSON string value (because JSON does not have a date type)' do
+      dummy_class.csv_file_to_hierarchical_json_hash(
+        unsorted_headers_2_records_csv_file.path,
+        {}
+      ) do |json_hash_for_row, _csv_row_number|
+        expect(json_hash_for_row['published']).to be_an_instance_of(String)
+      end
+    end
   end
 
   describe '.csv_row_hash_to_hierarchical_json_hash' do
