@@ -1,4 +1,4 @@
-# frozen_string_literal: true
+# frozen_string_literal: false
 
 require 'spec_helper'
 require 'json_csv/csv_to_json'
@@ -28,8 +28,10 @@ describe JsonCsv::CsvToJson do
     end
 
     it 'converts as expected' do
-      dummy_class.csv_file_to_hierarchical_json_hash(unsorted_headers_2_records_csv_file.path,
-                                                     field_casting_rules) do |json_hash_for_row, csv_row_number|
+      dummy_class.csv_file_to_hierarchical_json_hash(
+        unsorted_headers_2_records_csv_file.path,
+        field_casting_rules
+      ) do |json_hash_for_row, csv_row_number|
         expect(json_hash_for_row).to eq(expected_results[csv_row_number - 2])
       end
     end

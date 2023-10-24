@@ -33,7 +33,7 @@ namespace :json_csv do
   end
 
   desc 'CI build'
-  task ci_nocop: :environment do
+  task :ci_nocop do
     Rake::Task['json_csv:rspec'].invoke
   end
 end

@@ -21,6 +21,9 @@ RSpec/ContextWording:
 RSpec/MultipleExpectations:
   Enabled: false
 
+RSpec/NestedGroups:
+  Enabled: false
+
 RSpec/ExampleLength:
   Enabled: false
 
@@ -63,88 +66,5 @@ Metrics/MethodLength:
 Style/OptionalBooleanParameter:
   Enabled: false
 
-# Metrics/ClassLength:
-#   Exclude: []
-#   CountComments: false  # count full line comments?
-#   Max: 275
-
-# Metrics/ModuleLength:
-#   Exclude: []
-#   CountComments: false
-#   Max: 110
-
-# Metrics/ParameterLists:
-#   Max: 6
-
-# Naming/PredicateName:
-#   Exclude: []
-
-# Performance/Casecmp:
-#   Enabled: false
-
-# Style/BlockDelimiters:
-#   Exclude:
-#     - 'spec/**/*'
-
-# Style/CollectionMethods:
-#   PreferredMethods:
-#     collect: 'map'
-#     collect!: 'map!'
-#     inject: 'reduce'
-#     detect: 'find'
-#     find_all: 'select'
-
-# Style/WordArray:
-#   Enabled: false
-
-# Style/RegexpLiteral:
-#   Enabled: false
-
-# Style/StringLiterals:
-#   Enabled: false
-
-# Style/ClassAndModuleChildren:
-#   Enabled: false
-
-# Style/Documentation:
-#   Enabled: false
-
-# Style/HashSyntax:
-#   Exclude: []
-
-# Style/LineEndConcatenation:
-#   Exclude: []
-
-# Style/GlobalVars:
-#   Exclude:
-#     - 'spec/**/*'
-
-# Style/SingleLineBlockParams:
-#   Enabled: false
-
-# Style/ClassVars:
-#   Exclude: []
-
-# Style/SignalException:
-#   Enabled: false
-
-# Style/RedundantPercentQ:
-#   Enabled: false
-
-# RSpec/ExampleWording:
-#   CustomTransform:
-#     be: is
-#     have: has
-#     not: does not
-#     NOT: does NOT
-#   IgnoredWords:
-#     - only
-
-# RSpec/FilePath:
-#   Enabled: false
-
-# Style/FrozenStringLiteralComment:
-#   Enabled: false
-
-# RSpec/InstanceVariable:
-#   Enabled: false
+Rails/RakeEnvironment:
+  Enabled: false

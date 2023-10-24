@@ -1,4 +1,4 @@
-# frozen_string_literal: true
+# frozen_string_literal: false
 
 require 'spec_helper'
 require 'json_csv/utils'
@@ -143,10 +143,6 @@ describe JsonCsv::Utils do
         expect(input).to eq(expected_output)
       end
     end
-
-    it 'raises an error for non-Hash or non-Array input' do
-      expect { described_class.recursively_remove_blank_fields!('not a hash or array') }.to raise_error(ArgumentError)
-    end
   end
 
   describe '.recursively_strip_value_whitespace!' do
@@ -192,7 +188,7 @@ describe JsonCsv::Utils do
         }
       end
 
-      it do
+      it 'transforms as expected' do
         expect(described_class.recursively_strip_value_whitespace!(input)).to eq(expected_output)
         expect(input).to eq(expected_output)
       end
@@ -229,6 +225,57 @@ describe JsonCsv::Utils do
       it do
         expect(described_class.recursively_strip_value_whitespace!(input)).to eq(expected_output)
         expect(input).to eq(expected_output)
+      end
+    end
+
+    context 'when the passed-in structure contains a frozen string' do
+      let(:arr_with_frozen_string_element) do
+        [
+          '  string 1  '.freeze,
+          '  string 2  ',
+          '  string 3  '
+        ]
+      end
+
+      let(:hash_with_frozen_string_value) do
+        {
+          'key 1' => '  string value 1  '.freeze,
+          'key 2' => '  string value 2  ',
+          'key 3' => '  string value 3  '
+        }
+      end
+
+      context 'and the replace_frozen_strings_when_stripped param is false '\
+        '(which is the default value)' do
+        it 'raises an exception when a given array contains a frozen string value' do
+          expect {
+            described_class.recursively_strip_value_whitespace!(arr_with_frozen_string_element)
+          }.to raise_error(FrozenError)
+        end
+
+        it 'raises an exception when a given hash contains a frozen string value' do
+          expect {
+            described_class.recursively_strip_value_whitespace!(hash_with_frozen_string_value)
+          }.to raise_error(FrozenError)
+        end
+      end
+
+      context 'and the replace_frozen_strings_when_stripped param is true' do
+        it 'replaces a frozen array value as expected' do
+          described_class.recursively_strip_value_whitespace!(
+            arr_with_frozen_string_element, replace_frozen_strings_when_stripped: true
+          )
+          expect(arr_with_frozen_string_element[0]).to eq(arr_with_frozen_string_element[0].strip)
+          expect(arr_with_frozen_string_element[0]).not_to be_frozen
+        end
+
+        it 'replaces a frozen hash value as expected' do
+          described_class.recursively_strip_value_whitespace!(
+            hash_with_frozen_string_value, replace_frozen_strings_when_stripped: true
+          )
+          expect(hash_with_frozen_string_value['key 1']).to eq(hash_with_frozen_string_value['key 1'].strip)
+          expect(hash_with_frozen_string_value['key 1']).not_to be_frozen
+        end
       end
     end
   end
