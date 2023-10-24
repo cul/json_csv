@@ -33,6 +33,18 @@ describe JsonCsv::CsvToJson do
         field_casting_rules
       ) do |json_hash_for_row, csv_row_number|
         expect(json_hash_for_row).to eq(expected_results[csv_row_number - 2])
+        expect(json_hash_for_row['number_of_pages']).to be_an_instance_of(Integer)
+        expect(json_hash_for_row['is_a_great_book']).to be_an_instance_of(TrueClass)
+      end
+    end
+
+    it 'does not cast any fields when the field_casting_rules param is omitted (and treats them as strings)' do
+      dummy_class.csv_file_to_hierarchical_json_hash(
+        unsorted_headers_2_records_csv_file.path,
+        {}
+      ) do |json_hash_for_row, _csv_row_number|
+        expect(json_hash_for_row['number_of_pages']).to be_an_instance_of(String)
+        expect(json_hash_for_row['is_a_great_book']).to be_an_instance_of(String)
       end
     end
   end
@@ -215,6 +227,14 @@ describe JsonCsv::CsvToJson do
 
     it 'rejects invalid casting type' do
       expect { dummy_class.apply_field_casting_type('value to cast', 'unicorn') }.to raise_error(ArgumentError)
+    end
+
+    it 'rejects invalid casting scenario: boolean to integer' do
+      expect { dummy_class.apply_field_casting_type(true, 'integer') }.to raise_error(ArgumentError)
+    end
+
+    it 'rejects invalid casting scenario: boolean to float' do
+      expect { dummy_class.apply_field_casting_type(true, 'float') }.to raise_error(ArgumentError)
     end
   end
 

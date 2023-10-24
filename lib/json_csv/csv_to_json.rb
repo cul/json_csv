@@ -90,11 +90,11 @@ module JsonCsv
 
         case field_casting_type
         when TYPE_INTEGER
-          raise ArgumentError, "\"#{value}\" is not an integer" unless /^[0-9]+$/.match?(value)
+          raise ArgumentError, "\"#{value}\" is not an integer" unless /^[0-9]+$/.match?(value.to_s)
 
           value.to_i
         when TYPE_FLOAT
-          unless value =~ /^[0-9]+(\.[0-9]+)*$/ || value =~ /^\.[0-9]+$/
+          unless value.to_s =~ /^[0-9]+(\.[0-9]+)*$/ || value.to_s =~ /^\.[0-9]+$/
             raise ArgumentError,
                   "\"#{value}\" is not a float"
           end
