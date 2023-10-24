@@ -1,10 +1,15 @@
+# frozen_string_literal: true
+
 require 'csv'
 require 'json_csv/json_to_csv'
 
 module JsonCsv
   class CsvBuilder
-    private_class_method :new # private constructor. we don't want users to initialize this class.
-    attr_reader :known_headers_to_indexes # map of all headers seen by this CsvBuilder, mapped to their column order indexes
+    # private constructor. we don't want users to initialize this class.
+    private_class_method :new
+
+    # map of all headers seen by this CsvBuilder, mapped to their column order indexes
+    attr_reader :known_headers_to_indexes
 
     def initialize(open_csv_handle)
       @known_headers_to_indexes = {}
@@ -15,7 +20,10 @@ module JsonCsv
     def add(json_hash)
       row_to_write = []
       JsonCsv.json_hash_to_flat_csv_row_hash(json_hash).each do |column_header, cell_value|
-        known_headers_to_indexes[column_header] = known_headers_to_indexes.length unless known_headers_to_indexes.key?(column_header)
+        unless known_headers_to_indexes.key?(column_header)
+          known_headers_to_indexes[column_header] =
+            known_headers_to_indexes.length
+        end
         row_to_write[known_headers_to_indexes[column_header]] = cell_value
       end
       @open_csv_handle << row_to_write
@@ -41,13 +49,14 @@ module JsonCsv
 
     def self.original_header_indexes_to_sorted_indexes(csv_headers, column_header_comparator)
       original_headers_to_indexes = Hash[csv_headers.map.with_index { |header, index| [header, index] }]
-      headers_to_sorted_indexes = Hash[csv_headers.sort(&column_header_comparator).map.with_index { |header, index| [header, index] }]
+      headers_to_sorted_indexes = Hash[csv_headers.sort(&column_header_comparator).map.with_index do |header, index|
+                                         [header, index]
+                                       end ]
       original_to_sorted_index_map = {}
       original_headers_to_indexes.each do |header, original_index|
         original_to_sorted_index_map[original_index] = headers_to_sorted_indexes[header]
       end
       original_to_sorted_index_map
     end
-
   end
 end

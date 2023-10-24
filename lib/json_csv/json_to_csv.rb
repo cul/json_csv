@@ -1,9 +1,10 @@
+# frozen_string_literal: true
+
 require 'json'
 require 'json_csv/csv_builder'
 
 module JsonCsv
   module JsonToCsv
-
     def self.included(base)
       base.extend ClassMethods
     end
@@ -26,21 +27,20 @@ module JsonCsv
       #     csv_builder.add(json_hash)
       #   end
       # end
-      def create_csv_for_json_records(csv_outfile_path, header_sort_comparator = DEFAULT_HEADER_SORT_COMPARATOR)
-        csv_temp_outfile_path = csv_outfile_path + '.temp'
+      def create_csv_for_json_records(csv_outfile_path, header_sort_comparator = DEFAULT_HEADER_SORT_COMPARATOR, &block)
+        csv_temp_outfile_path = "#{csv_outfile_path}.temp"
 
         begin
           # Step 1: Build CSV with unsorted headers in temp file
-          csv_headers = JsonCsv::CsvBuilder.create_csv_without_headers(csv_temp_outfile_path, 'wb') do |csv_builder|
-            yield csv_builder
-          end
+          csv_headers = JsonCsv::CsvBuilder.create_csv_without_headers(csv_temp_outfile_path, 'wb', &block)
 
           # Step 2: Sort CSV columns by header, based on column_header_comparator
-          original_to_sorted_index_map = JsonCsv::CsvBuilder.original_header_indexes_to_sorted_indexes(csv_headers, header_sort_comparator)
+          original_to_sorted_index_map = JsonCsv::CsvBuilder.original_header_indexes_to_sorted_indexes(
+            csv_headers, header_sort_comparator
+          )
           CSV.open(csv_outfile_path, 'wb') do |final_csv|
             # Open temporary CSV for reading
             CSV.open(csv_temp_outfile_path, 'rb') do |temp_csv|
-
               # write out ordered header row
               reordered_header_row = []
               csv_headers.each_with_index do |header, index|
@@ -82,8 +82,11 @@ module JsonCsv
         if obj.is_a?(Hash)
           obj.each do |key, val|
             if key_contains_unallowed_characters?(key)
-              raise ArgumentError, 'Cannot deal with hash keys that contain "[" or "]" or "." because these characters have special meanings in CSV headers.'
+              raise ArgumentError,
+                    'Cannot deal with hash keys that contain "[" or "]" or "." because '\
+                    'these characters have special meanings in CSV headers.'
             end
+
             path = parent_path + (parent_path.empty? ? '' : '.') + key
             flatten_hash(val, path, flat_hash_to_build)
           end
@@ -101,9 +104,9 @@ module JsonCsv
 
       def key_contains_unallowed_characters?(key)
         return true if key.index('[') || key.index(']') || key.index('.')
+
         false
       end
     end
-
   end
 end

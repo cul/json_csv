@@ -1,13 +1,14 @@
+# frozen_string_literal: true
+
 require 'json_csv/utils'
 require 'csv'
 
 module JsonCsv
   module CsvToJson
-
-    TYPE_STRING = 'string'.freeze
-    TYPE_INTEGER = 'integer'.freeze
-    TYPE_FLOAT = 'float'.freeze
-    TYPE_BOOLEAN = 'boolean'.freeze
+    TYPE_STRING = 'string'
+    TYPE_INTEGER = 'integer'
+    TYPE_FLOAT = 'float'
+    TYPE_BOOLEAN = 'boolean'
     FIELD_CASTING_TYPES = [TYPE_STRING, TYPE_INTEGER, TYPE_FLOAT, TYPE_BOOLEAN].freeze
 
     def self.included(base)
@@ -19,9 +20,14 @@ module JsonCsv
       # presenting that row as un-flattened json.
       # This method works for large CSVs and uses very little memory
       # because it only keeps one row in memory at a time.
-      # Sample usage: csv_file_to_hierarchical_json_hash(path_to_csv, field_casting_rules = {}, strip_value_whitespace = true) do |row_json_hash, row_number|
+      # Sample usage:
+      # csv_file_to_hierarchical_json_hash(
+      #  path_to_csv, field_casting_rules = {}, strip_value_whitespace = true
+      # ) { |row_json_hash, row_number| ...your block logic here... }
       def csv_file_to_hierarchical_json_hash(path_to_csv, field_casting_rules = {}, strip_value_whitespace = true)
-        i = 2 # start with row 2 because this corresponds to the SECOND row of 1-indexed CSV data (where headers are row 1)
+        # Start with row 2 because this corresponds to the SECOND row of
+        # 1-indexed CSV data (where headers are row 1)
+        i = 2
         CSV.foreach(path_to_csv, headers: true, header_converters: lambda { |header|
           header.strip # remove leading and trailing header whitespace
         }) do |row_data_hash|
@@ -34,6 +40,7 @@ module JsonCsv
         hierarchical_hash = {}
         row_data_hash.each do |key, value|
           next if value.nil? || value == '' # ignore nil or empty string values
+
           put_value_at_json_path(hierarchical_hash, key, value, field_casting_rules)
         end
         # Clean up empty array elements, which may have come about from CSV data
@@ -53,11 +60,19 @@ module JsonCsv
         if json_path_pieces.length == 1
           # If the full_json_path_from_top matches one of the field_casting_rules,
           # then case this field to the specified cast type
-          full_json_path_from_top_as_field_casting_rule_pattern = real_json_path_to_field_casting_rule_pattern(full_json_path_from_top)
-          obj[json_path_pieces[0]] = field_casting_rules.key?(full_json_path_from_top_as_field_casting_rule_pattern) ? apply_field_casting_type(value, field_casting_rules[full_json_path_from_top_as_field_casting_rule_pattern]) : value
+          full_json_path_from_top_as_field_casting_rule_pattern =
+            real_json_path_to_field_casting_rule_pattern(full_json_path_from_top)
+          obj[json_path_pieces[0]] =
+            if field_casting_rules.key?(full_json_path_from_top_as_field_casting_rule_pattern)
+              apply_field_casting_type(value,
+                                       field_casting_rules[full_json_path_from_top_as_field_casting_rule_pattern])
+            else
+              value
+            end
         else
           obj[json_path_pieces[0]] ||= (json_path_pieces[1].is_a?(Integer) ? [] : {})
-          put_value_at_json_path(obj[json_path_pieces[0]], pieces_to_json_path(json_path_pieces[1..-1]), value, field_casting_rules, full_json_path_from_top)
+          put_value_at_json_path(obj[json_path_pieces[0]], pieces_to_json_path(json_path_pieces[1..]), value,
+                                 field_casting_rules, full_json_path_from_top)
         end
       end
 
@@ -68,19 +83,28 @@ module JsonCsv
       end
 
       def apply_field_casting_type(value, field_casting_type)
-        raise ArgumentError, "Invalid cast type #{field_casting_type}" unless FIELD_CASTING_TYPES.include?(field_casting_type)
+        unless FIELD_CASTING_TYPES.include?(field_casting_type)
+          raise ArgumentError,
+                "Invalid cast type #{field_casting_type}"
+        end
 
         case field_casting_type
         when TYPE_INTEGER
-          raise ArgumentError, "\"#{value}\" is not an integer" unless value =~ /^[0-9]+$/
+          raise ArgumentError, "\"#{value}\" is not an integer" unless /^[0-9]+$/.match?(value.to_s)
+
           value.to_i
         when TYPE_FLOAT
-          raise ArgumentError, "\"#{value}\" is not a float" unless value =~ /^[0-9]+(\.[0-9]+)*$/ || value =~ /^\.[0-9]+$/
+          unless value.to_s =~ /^[0-9]+(\.[0-9]+)*$/ || value.to_s =~ /^\.[0-9]+$/
+            raise ArgumentError,
+                  "\"#{value}\" is not a float"
+          end
+
           value.to_f
         when TYPE_BOOLEAN
-          if value.downcase == 'true'
+          case value.downcase
+          when 'true'
             true
-          elsif value.downcase == 'false'
+          when 'false'
             false
           else
             raise ArgumentError, "\"#{value}\" is not a boolean"
@@ -123,7 +147,6 @@ module JsonCsv
         end
         json_path
       end
-
     end
   end
 end

@@ -1,6 +1,8 @@
-require "bundler/gem_tasks"
+# frozen_string_literal: true
 
-Dir.glob("lib/tasks/**/*.rake").each do |rakefile|
+require 'bundler/gem_tasks'
+
+Dir.glob('lib/tasks/**/*.rake').each do |rakefile|
   load rakefile
 end
 
