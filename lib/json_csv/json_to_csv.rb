@@ -2,6 +2,7 @@
 
 require 'json'
 require 'json_csv/csv_builder'
+require 'fileutils'
 
 module JsonCsv
   module JsonToCsv
